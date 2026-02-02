@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scaletestapp
+  labels:
+    app: scaletestapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scaletestapp
+  template:
+    metadata:
+      labels:
+        app: scaletestapp
+    spec:
+      containers:
+        - name: scaletestapp
+          image: ghcr.io/yandex-practicum/scaletestapp:latest
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "30Mi"
+            limits:
+              memory: "50Mi"
+    # В тестах лимит 30 мбайт оказался очень маленьким, контейнер умирал по OOM прежде чем Kubernetes успевал заметить
+    # превышение цели по памяти и отмасштабироваться. В продакшене на гигабайтах, наверное, это не так критично, но я
+    # все равно предпочел бы другие метрики, например, RPS. И балансировщик, наверное, нужен поумнее.
